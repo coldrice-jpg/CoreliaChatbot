@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from bot_logic import CoreliaLogic
+from chatbot_logic.bot_logic import CoreliaLogic
 
 class CoreliaGUI(ctk.CTk):
     def __init__(self):

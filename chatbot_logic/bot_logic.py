@@ -7,7 +7,7 @@ class CoreliaLogic:
         self.history = [
             {"role": "system", "content": "Eres Corelia, la asistente oficial de la universidad. Responde de forma amable y profesional."}
         ]
-
+ 
     def get_response(self, user_input):
         # Añadimos lo que dijo el usuario al historial
         self.history.append({"role": "user", "content": user_input})
