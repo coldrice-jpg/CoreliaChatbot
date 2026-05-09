@@ -1,4 +1,11 @@
 import customtkinter as ctk
+import sys
+import os
+
+# Esto añade la carpeta raíz del proyecto al path de Python
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Ahora ya puedes importar de la carpeta hermana
 from chatbot_logic.bot_logic import CoreliaLogic
 
 class CoreliaGUI(ctk.CTk):
@@ -52,10 +59,10 @@ class CoreliaGUI(ctk.CTk):
         self.lbl_titulo = ctk.CTkLabel(self.header, text="Corelia Chat", text_color="white", font=("Arial", 14, "bold"), corner_radius=0)
         self.lbl_titulo.pack(side="left", padx=15, pady=5)
 
-        self.btn_cerrar = ctk.CTkButton(self.header, text="X", width=30, fg_color="transparent", hover_color="#c41616", command=self.alternar_chat, corner_radius=0)
+        self.btn_cerrar = ctk.CTkButton(self.header, text="X", width=30, fg_color="transparent", hover_color="#731515", command=self.alternar_chat, corner_radius=0)
         self.btn_cerrar.pack(side="right", padx=5, pady=5)
 
-        self.chat_container = ctk.CTkScrollableFrame(self.frame_chat, fg_color="#FFFFFF") # Fondo blanco para mensajes
+        self.chat_container = ctk.CTkScrollableFrame(self.frame_chat, fg_color="#FFFFFF", corner_radius=20) # Fondo blanco para mensajes
         self.chat_container.pack(padx=10, pady=10, fill="both", expand=True)
 
         self.input_frame = ctk.CTkFrame(self.frame_chat, fg_color="transparent")
@@ -83,7 +90,7 @@ class CoreliaGUI(ctk.CTk):
             ancho, alto = self.ancho_chat, self.alto_chat
             # Calculamos para que el chat crezca hacia la izquierda de la bolita
             x = screen_width - ancho - -250
-            y = screen_height - alto - -20
+            y = screen_height - alto - 15
 
         self.geometry(f"{ancho}x{alto}+{x}+{y}")
 
