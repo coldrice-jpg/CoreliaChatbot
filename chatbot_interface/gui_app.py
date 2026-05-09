@@ -1,11 +1,12 @@
-import customtkinter as ctk
 import sys
 import os
+import customtkinter as ctk
 
-# Esto añade la carpeta raíz del proyecto al path de Python
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Subir un nivel para encontrar la raíz del proyecto
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if root_path not in sys.path:
+    sys.path.insert(0, root_path)
 
-# Ahora ya puedes importar de la carpeta hermana
 from chatbot_logic.bot_logic import CoreliaLogic
 
 class CoreliaGUI(ctk.CTk):
@@ -36,8 +37,8 @@ class CoreliaGUI(ctk.CTk):
             width=self.radio_bolita, 
             height=self.radio_bolita, 
             corner_radius=self.radio_bolita // 2,
-            fg_color="#8e1313",
-            hover_color="#731515",
+            fg_color="#13488e",
+            hover_color="#153B73",
             font=("Arial", 30),
             command=self.alternar_chat
         )
@@ -50,16 +51,16 @@ class CoreliaGUI(ctk.CTk):
             fg_color="#F2F2F2", # Fondo gris sólido para el chat
             corner_radius=20, 
             border_width=2, 
-            border_color="#8e1313"
+            border_color="#13488e"
         )
         
-        self.header = ctk.CTkFrame(self.frame_chat, fg_color="#8e1313", height= 40, corner_radius=0)
+        self.header = ctk.CTkFrame(self.frame_chat, fg_color="#13488e", height= 40, corner_radius=0)
         self.header.pack(fill="x")
         
         self.lbl_titulo = ctk.CTkLabel(self.header, text="Corelia Chat", text_color="white", font=("Arial", 14, "bold"), corner_radius=0)
         self.lbl_titulo.pack(side="left", padx=15, pady=5)
 
-        self.btn_cerrar = ctk.CTkButton(self.header, text="X", width=30, fg_color="transparent", hover_color="#731515", command=self.alternar_chat, corner_radius=0)
+        self.btn_cerrar = ctk.CTkButton(self.header, text="X", width=30, fg_color="transparent", hover_color="#153B73", command=self.alternar_chat, corner_radius=0)
         self.btn_cerrar.pack(side="right", padx=5, pady=5)
 
         self.chat_container = ctk.CTkScrollableFrame(self.frame_chat, fg_color="#FFFFFF", corner_radius=20) # Fondo blanco para mensajes
@@ -72,7 +73,7 @@ class CoreliaGUI(ctk.CTk):
         self.entry.pack(side="left", fill="x", expand=True, padx=(0, 10))
         self.entry.bind("<Return>", self.procesar_mensaje)
 
-        self.btn_enviar = ctk.CTkButton(self.input_frame, text="➤", width=40, height=40, fg_color="#8e1313", hover_color="#731515", corner_radius=20, command=self.procesar_mensaje)
+        self.btn_enviar = ctk.CTkButton(self.input_frame, text="➤", width=40, height=40, fg_color="#13488e", hover_color="#153B73", corner_radius=20, command=self.procesar_mensaje)
         self.btn_enviar.pack(side="right")
 
         self.actualizar_geometria()
@@ -106,9 +107,15 @@ class CoreliaGUI(ctk.CTk):
         
         self.actualizar_geometria()
 
+    def scroll_al_final(self):
+        # Forzar la actualización de la interfaz para calcular el nuevo tamaño
+        self.update_idletasks()
+        # Mover el scroll al final (posiciones van de 0.0 a 1.0)
+        self.chat_container._parent_canvas.yview_moveto(1.0)
+
     def crear_globo(self, texto, emisor):
         if emisor == "user":
-            color_fondo = "#8e1313"; color_texto = "white"; posicion = "e"; pad_x = (50, 5)
+            color_fondo = "#13488e"; color_texto = "white"; posicion = "e"; pad_x = (50, 5)
         else:
             color_fondo = "#E9E9EB"; color_texto = "black"; posicion = "w"; pad_x = (5, 50)
 
@@ -116,12 +123,18 @@ class CoreliaGUI(ctk.CTk):
         globo.pack(anchor=posicion, padx=pad_x, pady=5)
         label = ctk.CTkLabel(globo, text=texto, wraplength=250, justify="left", text_color=color_texto, padx=10, pady=5)
         label.pack()
+        # --- AGREGA ESTA LÍNEA AL FINAL ---
+        self.after(10, self.scroll_al_final)
 
     def procesar_mensaje(self, event=None):
         texto_usuario = self.entry.get()
         if texto_usuario.strip():
             self.crear_globo(texto_usuario, "user")
             self.entry.delete(0, "end")
+            
+            # Actualizamos la pantalla para que el usuario vea su mensaje antes de que la IA procese
+            self.update_idletasks() 
+            
             respuesta_bot = self.chat_logic.get_response(texto_usuario)
             self.crear_globo(respuesta_bot, "bot")
 

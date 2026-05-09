@@ -1,0 +1,65 @@
+import sqlite3
+import os
+
+class UniversityDB:
+    def __init__(self):
+        # Esto asegura que siempre use el archivo en la carpeta de lógica
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.db_path = os.path.join(base_dir, "universidad.db")
+        self._crear_tablas()
+
+    def _crear_tablas(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            # Tabla para fechas importantes
+            cursor.execute('''CREATE TABLE IF NOT EXISTS eventos 
+                             (nombre TEXT, fecha TEXT, descripcion TEXT)''')
+            # Tabla para oferta académica
+            cursor.execute('''CREATE TABLE IF NOT EXISTS oferta_academica 
+                             (tipo TEXT, nombre TEXT, duracion TEXT)''')
+            conn.commit()
+
+    def obtener_toda_la_oferta(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT tipo, nombre FROM oferta_academica")
+            resultados = cursor.fetchall()
+            if resultados:
+                # Unimos todas las carreras en un solo texto informativo
+                lista = "\n".join([f"- {r[0]} en {r[1]}" for r in resultados])
+                return f"Nuestra oferta académica completa incluye:\n{lista}"
+            return None
+
+    def buscar_dato(self, pregunta_usuario):
+        pregunta = pregunta_usuario.lower()
+        
+        # SI LA PREGUNTA ES GENERAL: Detectamos palabras clave de "todo"
+        palabras_generales = ["oferta", "carreras", "licenciaturas", "doctorados", "tienen", "ofrecen"]
+        if any(p in pregunta for p in palabras_generales):
+            return self.obtener_toda_la_oferta()
+            
+        # SI LA PREGUNTA ES ESPECÍFICA: (Mantenemos tu lógica anterior de búsqueda por palabras)
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            # Limpiamos la pregunta y la dividimos en palabras
+            palabras = pregunta_usuario.lower().split()
+            
+            for palabra in palabras:
+                # Ignoramos palabras cortas como "de", "la", "que"
+                if len(palabra) < 4: continue 
+                
+                query = f"%{palabra}%"
+                
+                # Buscar en oferta académica
+                cursor.execute("""SELECT tipo, nombre, duracion FROM oferta_academica 
+                                WHERE nombre LIKE ? OR tipo LIKE ?""", (query, query))
+                carrera = cursor.fetchone()
+                if carrera:
+                    return f"Contamos con el {carrera[0]} en {carrera[1]} ({carrera[2]})."
+
+                # Buscar en eventos
+                cursor.execute("SELECT nombre, fecha FROM eventos WHERE nombre LIKE ?", (query,))
+                evento = cursor.fetchone()
+                if evento:
+                    return f"El evento '{evento[0]}' es el {evento[1]}."
+        return None
