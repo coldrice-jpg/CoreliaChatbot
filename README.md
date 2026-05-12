@@ -23,7 +23,7 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
 1. Clona este repositorio:
 
  
-        git clone https://github.com/tu-usuario/CoreliaChatbot.git
+        git clone https://github.com/coldrice-jpg/CoreliaChatbot.git
 
 2. Crea y activa un entorno virtual:
 
