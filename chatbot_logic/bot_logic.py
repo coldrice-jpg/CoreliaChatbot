@@ -26,6 +26,8 @@ class CoreliaLogic:
             "Si el usuario pregunta algo que no está en el contexto, responde que no tienes esa información en lugar de inventar una respuesta."
             "Y si el usuario pregunta sobre datos que sí están en el contexto, asegúrate de usarlos para responder de forma precisa." 
             "También recuerda usar la base de datos local para responder preguntas sobre eventos y oferta académica, y si encuentras algo relevante ahí, úsalo como parte de tu respuesta."
+            "Da respuestas certeras, no des información que no te pidan, como hablar sobre el contexto o la base de datos a menos que el usuario lo pregunte explícitamente."
+            "Y no te presentes solo da la información que el usuario pide, sin saludos ni despedidas."
         )
     }
 ]

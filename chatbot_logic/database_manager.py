@@ -17,6 +17,13 @@ class UniversityDB:
             # Tabla para oferta académica
             cursor.execute('''CREATE TABLE IF NOT EXISTS oferta_academica 
                              (tipo TEXT, nombre TEXT, duracion TEXT)''')
+            
+            # Insertar la fecha de renovación de becas si no existe para evitar duplicados
+            cursor.execute("SELECT * FROM eventos WHERE nombre = ?", ("Renovación de Becas",))
+            if not cursor.fetchone():
+                cursor.execute("INSERT INTO eventos (nombre, fecha, descripcion) VALUES (?, ?, ?)", 
+                               ("Renovación de Becas", "agosto 9 a agosto 22", "Periodo oficial de renovación"))
+            
             conn.commit()
 
     def obtener_toda_la_oferta(self):
@@ -38,7 +45,7 @@ class UniversityDB:
         if any(p in pregunta for p in palabras_generales):
             return self.obtener_toda_la_oferta()
             
-        # SI LA PREGUNTA ES ESPECÍFICA: (Mantenemos tu lógica anterior de búsqueda por palabras)
+        # SI LA PREGUNTA ES ESPECÍFICA:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             # Limpiamos la pregunta y la dividimos en palabras
